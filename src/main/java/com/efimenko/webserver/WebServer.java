@@ -1,15 +1,39 @@
-package com.efimenko.clientserver;
+package com.efimenko.webserver;
 
 import java.net.*;
 import java.io.*;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 public class WebServer {
     //static Logger logger = Logger.getLogger(Server.class.getName());
 
-    public static void main(String[] args) throws IOException{
-        ServerSocket serverSocket = null;
+    private ServerSocket serverSocket;
+    int port;
+    String webAppPath;
+
+    private int DefaultPort(){
+        return 3000;
+    }
+
+    private String DefaultWebbAppPath(){
+        return ".";
+    }
+
+    public void setPort(int newPort) {
+        port = newPort;
+    }
+
+    public void setWebAppPath(String newWebAppPath){
+        webAppPath = newWebAppPath;
+    }
+
+
+    public WebServer(){
+        serverSocket = null;
+        port = DefaultPort();
+        webAppPath = DefaultWebbAppPath();
+    }
+
+    public void start() throws IOException{
         try {
             serverSocket = new ServerSocket(3000);
         } catch (IOException e) {
@@ -35,4 +59,8 @@ public class WebServer {
 
         writer.close();
     }
+
+    /*public static void main(String[] args) throws IOException{
+        //ServerSocket serverSocket = null;
+    }*/
 }

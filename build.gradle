@@ -1,8 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'com.efimenko.clientserver.Client'
-//mainClassName = 'com.efimenko.clientserver.Server'
+mainClassName = 'com.efimenko.webserver.Client'
+//mainClassName = 'com.efimenko.webserver.Server'
 
 repositories {
     mavenCentral()
