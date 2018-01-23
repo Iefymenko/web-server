@@ -7,8 +7,8 @@ public class WebServer {
     //static Logger logger = Logger.getLogger(Server.class.getName());
 
     private ServerSocket serverSocket;
-    int port;
-    String webAppPath;
+    private int port;
+    private String webAppPath;
 
     private int DefaultPort(){
         return 3000;
@@ -48,19 +48,36 @@ public class WebServer {
             System.out.println(value);
         }
 
-        String response = "HTTP/1.1 200 OK\n";
-        String content = "\nHello this is my html page";
+        String response = "HTTP/1.1 200 OK\n\n";
+        //String content = "Hello this is my html page";
 
-        response += content;
+        //cd ..\..\..\..\webapp\index.html
+
+        //response += content;
+
+        File fileFrom = new File("C:\\Work\\web-server\\src\\main\\webapp\\index.html");
 
         OutputStream outputStream = socket.getOutputStream();
-        Writer writer = new OutputStreamWriter(outputStream);
-        writer.write(response);
+        //Writer writer = new OutputStreamWriter(outputStream);
+        BufferedOutputStream bos = new BufferedOutputStream(outputStream);
+        //writer.write(response);
 
-        writer.close();
+        bos.write(response.getBytes(), 0, response.length());
+
+        try {
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileFrom));
+
+            byte[] buffer = new byte[1000];
+            int numBytes;
+            while ((numBytes = bis.read(buffer)) != -1) {
+                bos.write(buffer, 0, numBytes);
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        bos.close();
     }
 
-    /*public static void main(String[] args) throws IOException{
-        //ServerSocket serverSocket = null;
-    }*/
 }
