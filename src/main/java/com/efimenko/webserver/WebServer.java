@@ -15,7 +15,7 @@ public class WebServer {
     }
 
     private String DefaultWebbAppPath(){
-        return ".";
+        return new File("").getAbsolutePath();
     }
 
     public void setPort(int newPort) {
@@ -23,7 +23,7 @@ public class WebServer {
     }
 
     public void setWebAppPath(String newWebAppPath){
-        webAppPath = newWebAppPath;
+        webAppPath = DefaultWebbAppPath().concat("\\src\\main\\").concat(newWebAppPath);
     }
 
 
@@ -44,40 +44,42 @@ public class WebServer {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
         String value;
-        while (!(value = bufferedReader.readLine()).isEmpty()) {
-            System.out.println(value);
-        }
+        value = bufferedReader.readLine();
+        String arr[] = value.split(" ", 3);
 
-        String response = "HTTP/1.1 200 OK\n\n";
-        //String content = "Hello this is my html page";
+        if ("GET".equals(arr[0])) {
 
-        //cd ..\..\..\..\webapp\index.html
+            String response = "HTTP/1.1 200 OK\n\n";
 
-        //response += content;
+            File fileFrom = new File( webAppPath.concat(arr[1]));
 
-        File fileFrom = new File("C:\\Work\\web-server\\src\\main\\webapp\\index.html");
+            OutputStream outputStream = socket.getOutputStream();
+            BufferedOutputStream bos = new BufferedOutputStream(outputStream);
 
-        OutputStream outputStream = socket.getOutputStream();
-        //Writer writer = new OutputStreamWriter(outputStream);
-        BufferedOutputStream bos = new BufferedOutputStream(outputStream);
-        //writer.write(response);
+            try {
+                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileFrom));
 
-        bos.write(response.getBytes(), 0, response.length());
+                bos.write(response.getBytes(), 0, response.length());
 
-        try {
-            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileFrom));
-
-            byte[] buffer = new byte[1000];
-            int numBytes;
-            while ((numBytes = bis.read(buffer)) != -1) {
-                bos.write(buffer, 0, numBytes);
+                byte[] buffer = new byte[1000];
+                int numBytes;
+                while ((numBytes = bis.read(buffer)) != -1) {
+                    bos.write(buffer, 0, numBytes);
+                }
             }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
+            catch (FileNotFoundException e) {
+                response = "HTTP/1.1 404 Not Found\n\n";
+                response += "<html><body><h1>404 Page not found!!</h1></body></html>";
+                bos.write(response.getBytes(), 0, response.length());
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            bos.close();
+
         }
 
-        bos.close();
     }
 
 }
