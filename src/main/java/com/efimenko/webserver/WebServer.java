@@ -39,46 +39,52 @@ public class WebServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Socket socket = serverSocket.accept();
-        InputStream inputStream = socket.getInputStream();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
-        String value;
-        value = bufferedReader.readLine();
-        String arr[] = value.split(" ", 3);
+        while (true) {
 
-        if ("GET".equals(arr[0])) {
+            Socket socket = serverSocket.accept();
+            InputStream inputStream = socket.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
-            String response = "HTTP/1.1 200 OK\n\n";
+            String value;
+            value = bufferedReader.readLine();
+            String arr[] = value.split(" ", 3);
 
-            File fileFrom = new File( webAppPath.concat(arr[1]));
+            if ("GET".equals(arr[0])) {
 
-            OutputStream outputStream = socket.getOutputStream();
-            BufferedOutputStream bos = new BufferedOutputStream(outputStream);
+                String response = "HTTP/1.1 200 OK\n\n";
 
-            try {
-                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileFrom));
+                File fileFrom = new File( webAppPath.concat(arr[1]));
 
-                bos.write(response.getBytes(), 0, response.length());
+                OutputStream outputStream = socket.getOutputStream();
+                BufferedOutputStream bos = new BufferedOutputStream(outputStream);
 
-                byte[] buffer = new byte[1000];
-                int numBytes;
-                while ((numBytes = bis.read(buffer)) != -1) {
-                    bos.write(buffer, 0, numBytes);
+                try {
+                    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileFrom));
+
+                    bos.write(response.getBytes(), 0, response.length());
+
+                    byte[] buffer = new byte[1000];
+                    int numBytes;
+                    while ((numBytes = bis.read(buffer)) != -1) {
+                        bos.write(buffer, 0, numBytes);
+                    }
                 }
-            }
-            catch (FileNotFoundException e) {
-                response = "HTTP/1.1 404 Not Found\n\n";
-                response += "<html><body><h1>404 Page not found!!</h1></body></html>";
-                bos.write(response.getBytes(), 0, response.length());
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
+                catch (FileNotFoundException e) {
+                    response = "HTTP/1.1 404 Not Found\n\n";
+                    response += "<html><body><h1>404 Page not found!!</h1></body></html>";
+                    bos.write(response.getBytes(), 0, response.length());
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            bos.close();
+                bos.close();
+
+            }
 
         }
+
 
     }
 
