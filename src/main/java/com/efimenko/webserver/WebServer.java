@@ -9,6 +9,8 @@ public class WebServer {
     private ServerSocket serverSocket;
     private int port;
     private String webAppPath;
+    private static final String RESPONSE_200 = "HTTP/1.1 200 OK\n\n";
+    private static final String RESPONSE_404 = "HTTP/1.1 404 Not Found\n\n";
 
     private int DefaultPort(){
         return 3000;
@@ -52,8 +54,6 @@ public class WebServer {
 
             if ("GET".equals(arr[0])) {
 
-                String response = "HTTP/1.1 200 OK\n\n";
-
                 File fileFrom = new File( webAppPath.concat(arr[1]));
 
                 OutputStream outputStream = socket.getOutputStream();
@@ -62,7 +62,7 @@ public class WebServer {
                 try {
                     BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileFrom));
 
-                    bos.write(response.getBytes(), 0, response.length());
+                    bos.write(RESPONSE_200.getBytes(), 0, RESPONSE_200.length());
 
                     byte[] buffer = new byte[1000];
                     int numBytes;
@@ -71,7 +71,7 @@ public class WebServer {
                     }
                 }
                 catch (FileNotFoundException e) {
-                    response = "HTTP/1.1 404 Not Found\n\n";
+                    String response = RESPONSE_404;
                     response += "<html><body><h1>404 Page not found!!</h1></body></html>";
                     bos.write(response.getBytes(), 0, response.length());
                 }
