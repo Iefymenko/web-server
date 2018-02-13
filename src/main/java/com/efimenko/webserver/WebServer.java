@@ -4,11 +4,11 @@ import java.net.*;
 import java.io.*;
 
 public class WebServer {
-    //static Logger logger = Logger.getLogger(Server.class.getName());
 
+    private String webAppPathRelative;
+    private WebServerFile webServerFile;
     private ServerSocket serverSocket;
     private int port;
-    private String webAppPath;
     private static final String RESPONSE_200 = "HTTP/1.1 200 OK\n\n";
     private static final String RESPONSE_404 = "HTTP/1.1 404 Not Found\n\n";
 
@@ -16,26 +16,22 @@ public class WebServer {
         return 3000;
     }
 
-    private String DefaultWebbAppPath(){
-        return new File("").getAbsolutePath();
-    }
-
     public void setPort(int newPort) {
         port = newPort;
     }
 
     public void setWebAppPath(String newWebAppPath){
-        webAppPath = DefaultWebbAppPath().concat("\\src\\main\\").concat(newWebAppPath);
+        webAppPathRelative = newWebAppPath;
     }
 
 
-    public WebServer(){
+    WebServer(){
         serverSocket = null;
         port = DefaultPort();
-        webAppPath = DefaultWebbAppPath();
     }
 
     public void start() throws IOException{
+        webServerFile = new WebServerFile(webAppPathRelative);
         try {
             serverSocket = new ServerSocket(3000);
         } catch (IOException e) {
@@ -54,7 +50,7 @@ public class WebServer {
 
             if ("GET".equals(arr[0])) {
 
-                File fileFrom = new File( webAppPath.concat(arr[1]));
+                File fileFrom = webServerFile.getFile(arr[1]);
 
                 OutputStream outputStream = socket.getOutputStream();
                 BufferedOutputStream bos = new BufferedOutputStream(outputStream);
